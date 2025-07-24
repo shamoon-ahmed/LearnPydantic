@@ -5,7 +5,7 @@ from typing import List, Dict, Annotated, Optional
 class Patient(BaseModel):
     name : Annotated[str, Field(max_length=30, title='Name of Patient', description='Name registered in CNIC', examples='Rengoku')]
     age : int = Field(gt=0, lt=110)
-    married : Optional[bool] = False # If no value is passed, it defaults to None 
+    married : Annotated[Optional[bool], Field(default=False)] # If no value is passed, it defaults to False 
     linkedin_url : AnyUrl
     email: EmailStr
     allergies : Optional[List[str]] = None 
@@ -29,8 +29,7 @@ patient_record = {'name':'Ali',
                   'age':20,
                   'linkedin_url':'http://linkedin.com/shamoon-ahmed',
                   'email': 'sam@gmail.com',
-                  'contact_info':{'phone':'23456'},
-                  'married':True}
+                  'contact_info':{'phone':'23456'}}
 
 # creating the patient object with patient record and then unpacking it
 # ** means it converts a dict into keyword arguments
