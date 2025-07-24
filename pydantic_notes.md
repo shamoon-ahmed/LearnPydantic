@@ -30,7 +30,6 @@ class Patient(BaseModel):
 ## List, Dict, Optional, Annotated
 
 - **List and Dict Concept:**
-<br>
 For advance type checking, we use List, Dict, Optional, Annotated, etc to validate types
 <br>
 For instance, we want the user to pass a list with str elements in it. But how do we validate it?
