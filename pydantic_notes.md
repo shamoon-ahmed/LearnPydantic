@@ -30,6 +30,7 @@ class Patient(BaseModel):
 ## List, Dict, Optional, Annotated
 
 - **List and Dict Concept:**
+<br>
 For advance type checking, we use List, Dict, Optional, Annotated, etc to validate types
 <br>
 For instance, we want the user to pass a list with str elements in it. But how do we validate it?
@@ -39,7 +40,7 @@ We can say **contact : list**, but we don't know what data type is user going to
 Instead we need to import List from typing module to validate it
 <br>
 We can say **contact : List[str]** to validate the elements inside the list should be in string format. Similarly for different type validations we do the same thing and we import the respective data type from typing.
-
+<br>
 ```powershell
 contact : Dict[str, str]
 siblings_names : List[str]
@@ -51,7 +52,7 @@ siblings_names : List[str]
 We use Optional when we are saying some field is optional for the user. If they don't define it, we set a default value instead.
 <br>
 When using Optional, it's important to set a default value as well
-
+<br>
 ```powershell
 contact : Optional[Dict[str, str]] = None
 married : Optional[bool] = False
@@ -64,7 +65,7 @@ We use Annotated mostly with Field(), defining the metadata and the data type. T
 It should look like this. Annotated[datatype, Field()]
 <br>
 The default value can be defined after Annotated[] like Annotated[] = None OR in the Field(default=)
-
+<br>
 ```powershell
 contact : Annotated[Optional[Dict[str, str]], Field()] = None
 married : Annotated[Optional[bool], Field(default=False, description="Should be correct as in the NIC")]
