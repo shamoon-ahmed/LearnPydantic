@@ -76,3 +76,43 @@ The default value can be defined after Annotated[] like Annotated[] = None OR in
 contact : Annotated[Optional[Dict[str, str]], Field()] = None
 married : Annotated[Optional[bool], Field(default=False, description="Should be correct as in the NIC")]
 ```
+
+## Field Validator - @field_validator:
+
+**@field_validator** is a decorator used with Pydantic to validate a certain field. Without @field_validator we would have to type checking, coerce data, apply constraints, etc manually. With **@field_validator**, we write our own logic to validate a certain field, raise custom error messages, etc.
+
+We use **@field_validator** as a decorator above the function and pass the field in 'quotes' that we want to validate
+
+```powershell
+from pydantic import BaseModel, field_validator
+
+class Patient(BaseModel):
+    email : str
+
+    @field_validator('email')
+    def validate_email(value):
+
+        valid_domains = ['piaic.com', 'smiu.edu']
+
+        domain = value.split('@')[-1]
+
+        if domain in valid_domains:
+            return value
+        raise ValueError('Unregistered Email!')
+```
+
+### mode='before' OR mode='after'
+
+**mode** tells Pydantic when to validate and coerce the field.
+For instance when converting "30" into 30, we tell Pydantic if we want the raw input "30" so we say mode='before'.
+This brings us the unvalidated and non-coerced data. On the other hand mode='after' brings the coerced data.
+
+Remember: By default, mode is after. mode='after'
+
+```powershell
+@field_validator('age', mode='before') # setting mode='before' means we want the value before any validation/coersion happens 
+    def validate(value):
+        if 0 < value < 120:
+            return value
+        return ValueError('Invalid Age!')
+```
