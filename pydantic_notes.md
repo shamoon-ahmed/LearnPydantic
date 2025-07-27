@@ -141,3 +141,50 @@ class Patient(BaseModel):
             raise ValueError('Patients aged 60 and above must have an emergency number!')
         return model
 ```
+
+*See how we used two attributes **age** and **contact_info** from **model.attribute**. We won't be able to do this with @field_validator.*
+
+## Computed Field
+
+**@computed_field** allows us to create a new field based on already created fields that the user provided. 
+using **@computed_field**, user doesn't not have to have pass the value of that computed field. 
+Instead, we compute that field using the already available attributes.
+This makes that computed field not shown to the user as field to fill, but is added to the .model_dump() and json schemas and also Pydantic reads that field. 
+
+Creating a regular method would do the work but Pydantic won't even know that there's a new computed field or method
+
+Look at this code snippet:
+
+```powershell
+from pydantic import BaseModel, computed_field, Field
+from typing import Optional
+
+class Patient(BaseModel):
+    name : str
+    age : int = Field(gt=0, lt=120)
+    height : Optional[float] = None
+    weight : Optional[float] = None
+
+    @computed_field
+    def bmi(self) -> float:
+        if self.weight and self.height:
+            bmi = round(self.weight/self.height**2, 2)
+            return bmi
+        return None
+
+    # This method also does same exact work but is not included in model's json schema neither Pydantic reads it.
+    # That is why we use @comptuted_field for fields that are computed based on already provided fields
+    def calculate_bmi(self):
+        if self.weight and self.height:
+            return round(self.weight/self.height**2, 2)
+        return None
+    
+    def insert_patient(patient : Patient):
+        ...
+    
+    patient_record = {'name':'Ali', 'age':30, ...}
+
+    patient1 = Patient(**patient_record)
+    insert_patient(patient1)
+    print(patient1.model_dump()) # also shows that bmi field even tho we didn't ask the user to provide it
+```
