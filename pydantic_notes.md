@@ -188,3 +188,78 @@ class Patient(BaseModel):
     insert_patient(patient1)
     print(patient1.model_dump()) # also shows that bmi field even tho we didn't ask the user to provide it
 ```
+
+## Nested Models
+
+Nested Models simply means creating more than one Pydantic model and using that Pydantic model defined before as the data type of the field in the next Pydantic model to get the correct data and access some parts of it if needed.
+
+For instance, the address field in the Patient Pydantic Model accepts a Address data type (that is a Pydantic model defined above it) that helps us validate and access specific values if needed rather than building our own complex logic to extract parts from an address like the zip code.
+
+Rather than passing address like below which is mixed up and would be hard to extract some parts of it like the state or zip code
+
+```powershell
+p1 = {'name':'Ali', 'age':25, 'gender':'male', 'address':'house no.20, karachi, sindh, 76664'}
+patient1 = Patient(**p1)
+```
+Instead, we go with a structured way:
+
+```powershell
+
+from pydantic import BaseModel
+
+class Address(BaseModel):
+
+    city : str
+    state : str
+    zip : int
+
+class Patient(BaseModel):
+
+    name : str
+    age : int
+    gender : str
+    address : Address
+
+p1 = {'name':'Ali', 'age':25, 'gender':'male', 'address':{'city':'Karachi', 'state':'Sindh', 'zip':75850}}
+patient1 = Patient(**p1)
+
+print(patient1.name)
+print(patient1.address.zip)
+```
+Now it is
+- *Organized*
+- *Reusable*
+- *Readable*
+- *Can be validated*
+
+## Serialization
+
+**Serialization** means converting our Python object (Patient model) in our case, into a format that could easily be saved, transferred or sent over the network. For example sending data to frontend using FastAPI, for logs saving to a database, etc.
+
+```powershell
+# Exporting / Serialization
+
+p1_data = patient1.model_dump() # gives a dict object
+print(p1_data)
+print(type(p1_data))
+
+p1_data_json = patient1.model_dump_json() # gives a JSON string object 
+print(p1_data_json)
+print(type(p1_data_json))
+
+# Some parameters to control the serialization
+p1_data = patient1.model_dump(include=['name', 'age'])
+print(p1_data)
+
+p1_data = patient1.model_dump(exclude=['age'])
+print(p1_data)
+
+p1_data = patient1.model_dump(exclude={'name':...,'address': {'state'}})
+print(p1_data)
+```
+
+*Notice that in the last, we passed ... as the value of 'name'* <br>
+*Python will accept {key:value} pairs in a dictionary or [values] in a list. Not both at the same time like {'name','address': {'state'}} - This gives a SyntaxError.* <br>
+*To exclude a top level field like 'name' and nested field like address['state'], we give name an Ellipsis (...) that tells is to exclude the entire field like **name : whatever the value*** <br>
+*This way, the entire dictionary stays a dictionary with key:value pairs* <br>
+*The Ellipsis(...) works like a placeholder*
