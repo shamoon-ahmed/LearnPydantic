@@ -116,3 +116,28 @@ Remember: By default, mode is after. mode='after'
             return value
         return ValueError('Invalid Age!')
 ```
+
+So, as @field_validator only allows to validate a single field, we need something that allows validation operation with multiple fields
+
+This is where the next validator comes in
+
+## Model Validator
+
+**@model_validator** allows us to use the entire Pydantic model and validate any field we want.
+Just need to pass the mode in the decorator and model in function, and we can write our own custom logic for validation.
+
+Take a look at this code snippet:
+
+```powershell
+from pydantic import BaseModel, model_validator
+
+class Patient(BaseModel):
+    name : str
+    age : int = Field(gt=0, lt=120)
+
+    @model_validator(mode='after')
+    def registration_eligibility_for_old(cls, model):
+        if model.age >= 60 and 'emergency' not in model.contact_info:
+            raise ValueError('Patients aged 60 and above must have an emergency number!')
+        return model
+```
