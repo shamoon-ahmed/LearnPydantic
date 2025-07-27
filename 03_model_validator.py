@@ -35,7 +35,7 @@ patient_record = {'name':'Ali',
                   'age':60,
                   'linkedin_url':'http://linkedin.com/shamoon-ahmed',
                   'email': 'sam@gmail.com',
-                  'contact_info' : {'phone':'22334455', 'emergency':'2222'}}
+                  'contact_info' : {'phone':'22334455', 'emergency':'22222'}}
 
 # creating the patient object with patient record and then unpacking it
 # ** means it converts a dict into keyword arguments
